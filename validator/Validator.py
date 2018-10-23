@@ -203,6 +203,33 @@ def baidu_check(selfip, proxies):
             types = -1
     return protocol, types, speed
 
+def gov_check(selfip, proxies):
+    '''
+    用来检测代理的类型，突然发现，免费网站写的信息不靠谱，还是要自己检测代理的类型
+    :param
+    :return:
+    '''
+    protocol = -1
+    types = -1
+    speed = -1
+    try:
+        start = time.time()
+        r = requests.get(url='http://credit.customs.gov.cn/', headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
+        r.encoding = chardet.detect(r.content)['encoding']
+        if r.ok and r.content.find('企业名称或组织机构代码或社会信用代码'.encode()) != -1:
+            speed = round(time.time() - start, 2)
+            protocol= 0
+            types=0
+        else:
+            speed = -1
+            protocol= -1
+            types=-1
+    except Exception as e:
+            speed = -1
+            protocol = -1
+            types = -1
+    return protocol, types, speed
+
 def getMyIP():
     try:
         r = requests.get(url=config.TEST_IP, headers=config.get_header(), timeout=config.TIMEOUT)
